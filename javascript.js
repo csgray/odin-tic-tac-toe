@@ -19,11 +19,12 @@ const gameboard = (function () {
     const length = 3;
     const board = [];
 
-    // 2D array
-    for (let row = 0; row < length; row++) {
-        board[row] = [];
-        for (let column = 0; column < length; column++) {
-            board[row].push(Square());
+    function newBoard() {
+        for (let row = 0; row < length; row++) {
+            board[row] = [];
+            for (let column = 0; column < length; column++) {
+                board[row].push(Square());
+            }
         }
     }
 
@@ -97,7 +98,7 @@ const gameboard = (function () {
         return !boardWithSquareValues.flat().includes("_");
     }
 
-    return { printBoard, markSquare, checkWinner, checkDraw }
+    return { newBoard, printBoard, markSquare, checkWinner, checkDraw }
 })();
 
 function Player(name, token) {
@@ -127,6 +128,7 @@ const gameController = (function () {
 
     function playGame() {
         console.log("Let's play Tic Tac Toe!")
+        gameboard.newBoard();
 
         let winner = false;
         let activePlayer = playerOne;
