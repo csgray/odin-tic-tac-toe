@@ -27,12 +27,16 @@ const gameboard = (function () {
         }
     }
 
-    function printBoard() {
-        const boardWithSquareValues = board.map(function (row) {
+    function getSquareValues() {
+        return board.map(function (row) {
             return row.map(function (square) {
                 return square.getValue();
             })
         })
+    }
+
+    function printBoard() {
+        const boardWithSquareValues = getSquareValues();
         console.table(boardWithSquareValues);
     }
 
@@ -88,16 +92,21 @@ const gameboard = (function () {
         return false;
     }
 
-    return { printBoard, markSquare, checkWinner }
+    function checkDraw() {
+        const boardWithSquareValues = getSquareValues();
+        return !boardWithSquareValues.flat().includes("_");
+    }
+
+    return { printBoard, markSquare, checkWinner, checkDraw }
 })();
 
-function player(name, token) {
+function Player(name, token) {
     return { name, token };
 }
 
 const gameController = (function () {
-    const playerOne = player("Player One", "X");
-    const playerTwo = player("Player Two", "O");
+    const playerOne = Player("Player One", "X");
+    const playerTwo = Player("Player Two", "O");
 
     function playRound(player) {
         console.log(`It is ${player.name}'s turn.`)
@@ -105,10 +114,12 @@ const gameController = (function () {
         const column = prompt("Which column?");
         gameboard.markSquare(row, column, player.token);
 
-        if (gameboard.checkWinner(player.token) === true) {
-            gameboard.printBoard();
-            console.log(`${player.name} wins!`)
-            return true;
+        if (gameboard.checkWinner(player.token)) {
+            return player;
+        }
+
+        if (gameboard.checkDraw()) {
+            return "draw";
         }
 
         return false;
@@ -124,6 +135,14 @@ const gameController = (function () {
             winner = playRound(activePlayer);
             activePlayer = activePlayer === playerOne ? playerTwo : playerOne;
         } while (winner === false);
+
+        gameboard.printBoard();
+        if (winner === "draw") {
+            console.log("It's a draw. There are no more moves.")
+        } else {
+            console.log(`${winner.name} wins!`)
+        }
+        return;
     }
 
     return { playGame };
