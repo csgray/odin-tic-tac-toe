@@ -4,26 +4,76 @@
     box-sizing: border-box;
 }
 
-h1 {
-    text-align: center;
+:root {
+    --sidebar-width: 20ch;
 }
 
-#board {
+body {
+    padding: 2rem 4rem;
+
+    font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+    font-weight: normal;
+
     display: grid;
-    grid-template-columns: repeat(3, 50px);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 5px;
-    justify-content: center;
+    grid-template-columns: repeat(3, 2fr);
+    grid-template-rows: 1fr auto;
 
-    & .square {
-        border: 2px solid black;
-        height: 50px;
-        width: 50px;
+    & #title {
+        margin-bottom: 1rem;
+        grid-column: span 3;
+        text-align: center;
+    } 
 
-        font-size: large;
+    & #sidebar {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        grid-template-rows: 1fr 1fr 4fr;
+        justify-items: end;
+        align-items: center;
+        
+        & .player {
+
+        }
+
+        & #new-game {
+            
+        }
+    }
+
+    & #main {
+        justify-items: center;
+
+        & #board {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+        
+            & .square {
+                border: 2px solid black;
+                height: 50px;
+                width: 50px;
+
+                font-size: x-large;
+                font-weight: 1000;
+            }
+        }
+    
+        & #message {
+            margin: 1rem 0rem;
+            text-align: center;
+        }
+
+        & #new-game {
+            padding: 0.25rem;
+            border: 2px solid black;
+            border-radius: 4px;
+
+            font-weight: 600;
+        }
     }
 }
 
-#message {
-    text-align: center;
-}
+
+
+

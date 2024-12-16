@@ -134,13 +134,18 @@ const gameController = (function () {
         return null;
     }
 
-    return { getActivePlayer, playRound };
+    function startNewGame() {
+        activePlayer = playerOne;
+        gameboard.newBoard();
+    }
+
+    return { getActivePlayer, playRound, startNewGame };
 })();
 
 function screenController() {
     const boardDiv = document.getElementById("board");
     const messageDiv = document.getElementById("message");
-    gameboard.newBoard();
+    const newGameButton = document.getElementById("new-game");
 
     function updateScreen() {
         boardDiv.textContent = "";
@@ -181,9 +186,15 @@ function screenController() {
         updateScreen();
     }
 
-    messageDiv.textContent = `It is ${gameController.getActivePlayer()}'s turn.`
-    boardDiv.addEventListener("click", clickHandlerBoard);
-    updateScreen();
+    function startNewGame(event) {
+        gameController.startNewGame();
+        boardDiv.addEventListener("click", clickHandlerBoard);
+        messageDiv.textContent = `It is ${gameController.getActivePlayer()}'s turn.`
+        updateScreen();
+    }
+
+    newGameButton.addEventListener("click", startNewGame)
+    startNewGame();
 }
 
 screenController();
