@@ -1,5 +1,5 @@
 function Square() {
-    let value = "_";
+    let value = "";
 
     function addToken(player) {
         value = player;
@@ -28,6 +28,10 @@ const gameboard = (function () {
         }
     }
 
+    function getBoard() {
+        return board;
+    }
+
     function getSquareValues() {
         return board.map(function (row) {
             return row.map(function (square) {
@@ -44,7 +48,7 @@ const gameboard = (function () {
     function markSquare(row, column, player) {
         const square = board[row][column];
 
-        if (square.getValue() !== "_") {
+        if (square.getValue() !== "") {
             throw new Error("Invalid move! That square is already taken.");
         } else {
             square.addToken(player);
@@ -95,10 +99,10 @@ const gameboard = (function () {
 
     function checkDraw() {
         const boardWithSquareValues = getSquareValues();
-        return !boardWithSquareValues.flat().includes("_");
+        return !boardWithSquareValues.flat().includes("");
     }
 
-    return { newBoard, printBoard, markSquare, checkWinner, checkDraw }
+    return { newBoard, getBoard, printBoard, markSquare, checkWinner, checkDraw }
 })();
 
 function Player(name, token) {
@@ -108,44 +112,78 @@ function Player(name, token) {
 const gameController = (function () {
     const playerOne = Player("Player One", "X");
     const playerTwo = Player("Player Two", "O");
+    let activePlayer = playerOne;
 
-    function playRound(player) {
-        console.log(`It is ${player.name}'s turn.`)
-        const row = prompt("Which row?");
-        const column = prompt("Which column?");
-        gameboard.markSquare(row, column, player.token);
+    function getActivePlayer() {
+        return activePlayer.name;
+    }
 
-        if (gameboard.checkWinner(player.token)) {
-            return player;
+    function playRound(row, column) {
+        gameboard.markSquare(row, column, activePlayer.token);
+
+        if (gameboard.checkWinner(activePlayer.token)) {
+            return activePlayer.name;
         }
 
         if (gameboard.checkDraw()) {
             return "draw";
         }
 
-        return false;
+        // There was no winner so switch players and return
+        activePlayer = activePlayer === playerOne ? playerTwo : playerOne;
+        return null;
     }
 
-    function playGame() {
-        console.log("Let's play Tic Tac Toe!")
-        gameboard.newBoard();
-
-        let winner = false;
-        let activePlayer = playerOne;
-        do {
-            gameboard.printBoard();
-            winner = playRound(activePlayer);
-            activePlayer = activePlayer === playerOne ? playerTwo : playerOne;
-        } while (winner === false);
-
-        gameboard.printBoard();
-        if (winner === "draw") {
-            console.log("It's a draw. There are no more moves.")
-        } else {
-            console.log(`${winner.name} wins!`)
-        }
-        return;
-    }
-
-    return { playGame };
+    return { getActivePlayer, playRound };
 })();
+
+function screenController() {
+    const boardDiv = document.getElementById("board");
+    const messageDiv = document.getElementById("message");
+    gameboard.newBoard();
+
+    function updateScreen() {
+        boardDiv.textContent = "";
+
+        const board = gameboard.getBoard();
+        board.forEach(function (row, rowIndex) {
+            row.forEach(function (square, columnIndex) {
+                const squareButton = document.createElement("button");
+                squareButton.classList.add("square");
+                squareButton.dataset.row = rowIndex;
+                squareButton.dataset.column = columnIndex;
+                squareButton.textContent = square.getValue();
+                boardDiv.appendChild(squareButton);
+            })
+        })
+    }
+
+    function clickHandlerBoard(event) {
+        const selectedRow = event.target.dataset.row;
+        const selectedColumn = event.target.dataset.column;
+        // Check for valid square
+        if (!selectedRow || !selectedColumn) return;
+
+        const winner = gameController.playRound(selectedRow, selectedColumn);
+
+        if (winner !== null) {
+            if (winner === "draw") {
+                messageDiv.textContent = "It's a draw."
+            } else {
+                messageDiv.textContent = `${winner} wins!`
+            }
+            boardDiv.removeEventListener("click", clickHandlerBoard);
+            updateScreen();
+            return;
+        }
+
+        messageDiv.textContent = `It is ${gameController.getActivePlayer()}'s turn.`
+        updateScreen();
+    }
+
+    messageDiv.textContent = `It is ${gameController.getActivePlayer()}'s turn.`
+    boardDiv.addEventListener("click", clickHandlerBoard);
+    updateScreen();
+}
+
+screenController();

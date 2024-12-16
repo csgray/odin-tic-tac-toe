@@ -1,0 +1,29 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 5px;
+    justify-content: center;
+
+    & .square {
+        border: 2px solid black;
+        height: 50px;
+        width: 50px;
+
+        font-size: large;
+    }
+}
+
+#message {
+    text-align: center;
+}
