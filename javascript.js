@@ -105,23 +105,28 @@ const gameboard = (function () {
     return { newBoard, getBoard, printBoard, markSquare, checkWinner, checkDraw }
 })();
 
-function Player(name, token) {
-    return { name, token };
+function Player(name, token, wins) {
+    return { name, token, wins };
 }
 
 const gameController = (function () {
-    const playerOne = Player("Player One", "X");
-    const playerTwo = Player("Player Two", "O");
+    const playerOne = Player("Player One", "X", 0);
+    const playerTwo = Player("Player Two", "O", 0);
     let activePlayer = playerOne;
 
     function getActivePlayer() {
         return activePlayer.name;
     }
 
+    function getWins() {
+        return [playerOne.wins, playerTwo.wins];
+    }
+
     function playRound(row, column) {
         gameboard.markSquare(row, column, activePlayer.token);
 
         if (gameboard.checkWinner(activePlayer.token)) {
+            activePlayer.wins++;
             return activePlayer.name;
         }
 
@@ -139,13 +144,15 @@ const gameController = (function () {
         gameboard.newBoard();
     }
 
-    return { getActivePlayer, playRound, startNewGame };
+    return { getActivePlayer, getWins, playRound, startNewGame };
 })();
 
 function screenController() {
     const boardDiv = document.getElementById("board");
     const messageDiv = document.getElementById("message");
     const newGameButton = document.getElementById("new-game");
+    const playerOneWins = document.getElementById("player-one-wins");
+    const playerTwoWins = document.getElementById("player-two-wins");
 
     function updateScreen() {
         boardDiv.textContent = "";
@@ -176,6 +183,8 @@ function screenController() {
                 messageDiv.textContent = "It's a draw."
             } else {
                 messageDiv.textContent = `${winner} wins!`
+                const wins = gameController.getWins();
+                [playerOneWins.textContent, playerTwoWins.textContent] = wins;
             }
             boardDiv.removeEventListener("click", clickHandlerBoard);
             updateScreen();
