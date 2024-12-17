@@ -114,6 +114,14 @@ const gameController = (function () {
     const playerTwo = Player("Player Two", "O", 0);
     let activePlayer = playerOne;
 
+    function setPlayerName(player, name) {
+        if (player === "one") {
+            playerOne.name = name;
+        } else if (player === "two") {
+            playerTwo.name = name;
+        }
+    }
+
     function getActivePlayer() {
         return activePlayer.name;
     }
@@ -144,7 +152,7 @@ const gameController = (function () {
         gameboard.newBoard();
     }
 
-    return { getActivePlayer, getWins, playRound, startNewGame };
+    return { setPlayerName, getActivePlayer, getWins, playRound, startNewGame };
 })();
 
 function screenController() {
@@ -202,8 +210,21 @@ function screenController() {
         updateScreen();
     }
 
+    // Initialize game
     newGameButton.addEventListener("click", startNewGame)
     startNewGame();
+
+    // Update player names
+    const playerOneName = document.getElementById("player-one-name");
+    const playerTwoName = document.getElementById("player-two-name");
+
+    playerOneName.addEventListener("mouseout", function () {
+        gameController.setPlayerName("one", playerOneName.textContent)
+    });
+
+    playerTwoName.addEventListener("mouseout", function () {
+        gameController.setPlayerName("two", playerTwoName.textContent)
+    });
 }
 
 screenController();

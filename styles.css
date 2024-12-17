@@ -30,14 +30,6 @@ body {
         grid-template-rows: 1fr 1fr 4fr;
         justify-items: end;
         align-items: center;
-        
-        & .player {
-
-        }
-
-        & #new-game {
-            
-        }
     }
 
     & #main {
@@ -74,6 +66,16 @@ body {
     }
 }
 
+/* Let the users know that they can edit the names. */
+[contenteditable="true"]:active,
+[contenteditable="true"]:focus{
+    border:none;
+    outline:none;
+}
 
-
-
+[contenteditable="true"]:hover::before,
+[contenteditable="true"]:focus::before{
+    content:"Edit: ";
+    font-size: small;
+    color: grey;
+}
